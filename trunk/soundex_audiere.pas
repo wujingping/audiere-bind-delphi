@@ -292,6 +292,7 @@ type
     Time      : TDateTime;
     Memo      : string;
     Pos       : LongInt;
+    IsPlayed  : boolean;
     IsPlaying : boolean;
     IsPausing : boolean;
 
@@ -966,9 +967,9 @@ begin
       FTags.NameValueSeparator:='=';
       for I := 0 to AdrSource.getTagCount - 1 do
       begin
-        tag.key     :=AdrSource.getTagKey(I);
-        tag.value   :=AdrSource.getTagValue(I);
-        tag.category:=AdrSource.getTagType(I);
+        tag.key     :=Trim(AdrSource.getTagKey(I));
+        tag.value   :=Trim(AdrSource.getTagValue(I));
+        tag.category:=Trim(AdrSource.getTagType(I));
         FTags.AddObject(tag.key+'='+tag.value,tag);
       end;
     end
@@ -1342,12 +1343,16 @@ procedure TAudio.stop;
 begin
   try
     if assigned(AdrOutput) then
+    begin
       if isPlaying then
-      begin
-        AdrOutput.Stop;
+        begin
+          AdrOutput.Stop;
+          AdrOutput.Unref;
+          //AdrOutput:=nil;
+        end
+      else
         AdrOutput.Unref;
-        //AdrOutput:=nil;
-      end;
+    end;
   except
   
   end;
@@ -2443,7 +2448,7 @@ begin
       pmSingle    : begin
                       if (not FSound.isPlaying) And (assigned(FSound))then
                       begin
-//                        FSound.Loop:=false;
+                        FSound.Loop:=false;
 //                        FSound.stop;
 //                        FSound.Free;
 //                        TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
@@ -2453,21 +2458,23 @@ begin
       pmSequence  : begin
                       if (not FSound.isPlaying) And (assigned(FSound))then
                       begin
-//                        FSound.Loop:=false;
+                        FSound.Loop:=false;
 //                        FSound.stop;
 //                        FSound.Free;
 //                        TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
                         if FItemIndex+1<FCount then
-                        begin
-                          sleep(100);
-                          play(FItemIndex+1);
-                        end;
+                          begin
+                            sleep(100);
+                            play(FItemIndex+1);
+                          end
+                        else
+                          stop;
                       end;
                     end;
       pmRandom    : begin
                       if (not FSound.isPlaying) And (assigned(FSound))then
                       begin
-//                        FSound.Loop:=false;
+                        FSound.Loop:=false;
 //                        FSound.stop;
 //                        FSound.Free;
 //                        TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
@@ -2484,7 +2491,7 @@ begin
       pmRepeatAll : begin
                       if (not FSound.isPlaying) And (assigned(FSound))then
                       begin
-//                        FSound.Loop:=false;
+                        FSound.Loop:=false;
 //                        FSound.stop;
 //                        FSound.Free;
 //                        TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
@@ -2515,8 +2522,10 @@ procedure TPlayList.play(index: integer);
 begin
   if index<0        then exit;
   if index>FCount-1 then exit;
+  if (index=FItemIndex) and (FIsPlaying) then exit;
   try
-    if FIsPlaying then stop;
+    //if FIsPlaying then stop;
+    stop;
     if not assigned(FSound) then FSound := TSound.Create;
     //FSound.open(TPlayListItem(FItems[index]).Path);
     FItemIndex:=index;
@@ -2602,7 +2611,6 @@ begin
   try
     if FCount<=0 then exit;
     if assigned(FTimer) then FTimer.Enabled:=false;
-
 
     FIsPausing := false;
     TPlayListItem(FItems[FItemIndex]).IsPausing := false;
