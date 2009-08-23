@@ -427,24 +427,40 @@ begin
 
     if lvPlaylist.Items.Count>0 then
     begin
+      if assigned(playList.Audio) and (playList.Items[playList.ItemIndex].IsPausing) then
+        begin
+          lvPlaylist.Items[playList.ItemIndex].Checked:=not lvPlaylist.Items[playList.ItemIndex].Checked;
+          lvPlaylist.Items[playList.ItemIndex].Selected:=true;
+          lvPlaylist.Items[playList.ItemIndex].MakeVisible(false);
+        end
+      else if assigned(playList.Audio) and (playList.Items[playList.ItemIndex].IsPlaying) then
+        begin
+          lvPlaylist.Items[playList.ItemIndex].Checked:=true;
+          lvPlaylist.Items[playList.ItemIndex].Selected:=true;        
+          lvPlaylist.Items[playList.ItemIndex].MakeVisible(false);
+        end
+      else
+        lvPlaylist.Items[playList.ItemIndex].Checked:=false;
+      
       for I := lvPlaylist.TopItem.Index to lvPlaylist.TopItem.Index+lvPlaylist.VisibleRowCount do
       begin
         if I>=lvPlaylist.Items.Count then break;
-        //if (I = playList.ItemIndex) And (playList.Audio.isPlaying) then
-        if (I = playList.ItemIndex) And (playList.Items[playList.ItemIndex].IsPausing) then
-          begin
-            lvPlaylist.Items[I].Checked:=not lvPlaylist.Items[I].Checked;
-            lvPlaylist.Items[I].MakeVisible(false);
-            lvPlaylist.Items[I].Selected:=true;;
-          end
-        else if (I = playList.ItemIndex) And (playList.Items[playList.ItemIndex].isPlaying) then
-          begin
-            lvPlaylist.Items[I].Checked:=true;
-            lvPlaylist.Items[I].MakeVisible(false);
-            lvPlaylist.Items[I].Selected:=true;;
-          end
-        else
-          lvPlaylist.Items[I].Checked:=false;
+        if I<>playList.ItemIndex then lvPlaylist.Items[I].Checked:=false;
+
+//        if (I = playList.ItemIndex) And (playList.Items[playList.ItemIndex].IsPausing) then
+//          begin
+//            lvPlaylist.Items[I].Checked:=not lvPlaylist.Items[I].Checked;
+//            lvPlaylist.Items[I].MakeVisible(false);
+//            lvPlaylist.Items[I].Selected:=true;
+//          end
+//        else if (I = playList.ItemIndex) And (playList.Items[playList.ItemIndex].isPlaying) then
+//          begin
+//            lvPlaylist.Items[I].Checked:=true;
+//            lvPlaylist.Items[I].MakeVisible(false);
+//            lvPlaylist.Items[I].Selected:=true;
+//          end
+//        else
+//          lvPlaylist.Items[I].Checked:=false;
       end;
     end;
 
