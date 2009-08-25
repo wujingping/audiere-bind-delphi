@@ -424,9 +424,16 @@ begin
   //exit;
   try
     if not assigned(playList) then exit;
+    if playList.ItemIndex<0 then exit;
 
     if lvPlaylist.Items.Count>0 then
     begin
+      for I := lvPlaylist.TopItem.Index to lvPlaylist.TopItem.Index+lvPlaylist.VisibleRowCount do
+      begin
+        if I>=lvPlaylist.Items.Count then break;
+        if I<>playList.ItemIndex then lvPlaylist.Items[I].Checked:=false;
+      end;
+
       if assigned(playList.Audio) and (playList.Items[playList.ItemIndex].IsPausing) then
         begin
           lvPlaylist.Items[playList.ItemIndex].Checked:=not lvPlaylist.Items[playList.ItemIndex].Checked;
@@ -436,39 +443,26 @@ begin
       else if assigned(playList.Audio) and (playList.Items[playList.ItemIndex].IsPlaying) then
         begin
           lvPlaylist.Items[playList.ItemIndex].Checked:=true;
-          lvPlaylist.Items[playList.ItemIndex].Selected:=true;        
+          lvPlaylist.Items[playList.ItemIndex].Selected:=true;
           lvPlaylist.Items[playList.ItemIndex].MakeVisible(false);
         end
       else
         lvPlaylist.Items[playList.ItemIndex].Checked:=false;
-      
-      for I := lvPlaylist.TopItem.Index to lvPlaylist.TopItem.Index+lvPlaylist.VisibleRowCount do
-      begin
-        if I>=lvPlaylist.Items.Count then break;
-        if I<>playList.ItemIndex then lvPlaylist.Items[I].Checked:=false;
 
-//        if (I = playList.ItemIndex) And (playList.Items[playList.ItemIndex].IsPausing) then
-//          begin
-//            lvPlaylist.Items[I].Checked:=not lvPlaylist.Items[I].Checked;
-//            lvPlaylist.Items[I].MakeVisible(false);
-//            lvPlaylist.Items[I].Selected:=true;
-//          end
-//        else if (I = playList.ItemIndex) And (playList.Items[playList.ItemIndex].isPlaying) then
-//          begin
-//            lvPlaylist.Items[I].Checked:=true;
-//            lvPlaylist.Items[I].MakeVisible(false);
-//            lvPlaylist.Items[I].Selected:=true;
-//          end
-//        else
-//          lvPlaylist.Items[I].Checked:=false;
-      end;
     end;
 
     if assigned(playList.Audio) then
       begin
+        if not playList.IsPlaying then
+        begin
+          MainForm.Caption:=AppTitle;
+          trackBarAudioPosition.Position:=0;
+          trackBarAudioPosition.SelEnd:=0;
+          exit;
+        end;
+        
         with playList.Audio do
         begin
-          if not playList.IsPlaying then exit;
           if Seekable then
           begin
             trackBarAudioPosition.Position:= Position*100 Div Length;
@@ -511,7 +505,8 @@ begin
 //        trackBarAudioVolume.Position:=0;
 //        trackBarAudioVolume.SelEnd:=0;
       end;
-    Application.Title:=MainForm.Caption;  
+
+    Application.Title:=MainForm.Caption;
   except
 
   end;
