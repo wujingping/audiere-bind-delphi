@@ -308,6 +308,7 @@ type
 *}
   TPlayList = class(TComponent)
   private
+    FSysInfo   : TAudioSystem;
     FMultiPlay : boolean;
     FSorting   : boolean;
     FIsPlaying : boolean;
@@ -329,6 +330,7 @@ type
     function  GetItem(Index: Integer):TPlayListItem;
     procedure SetItem(Index: Integer; Value: TPlayListItem);
     procedure checkStatus;
+    function  checkFile(index: integer):integer;
     procedure onTimer(Sender: TObject);
 
     procedure LoadFromList(aList: TStringList);
@@ -353,7 +355,7 @@ type
     property MultiPlay            : boolean        read FMultiPlay write FMultiPlay;
     property Sorting              : boolean        read FSorting   write FSorting;
     property IsPlaying            : boolean        read FIsPlaying write FIsPlaying;
-    property IsPausing            : boolean        read FIsPausing write FIsPausing;    
+    property IsPausing            : boolean        read FIsPausing write FIsPausing;
     property FadingIn             : boolean        read FFadingIn  write FFadingIn;
     property FadingOut            : boolean        read FFadingOut write FFadingOut;
     property Count                : Integer        read FCount     write FCount;
@@ -2169,6 +2171,8 @@ end;
 //constructor TPlayList.Create(AOwner: TComponent);
 constructor TPlayList.Create;
 begin
+  FSysInfo   := TAudioSystem.Create;
+  
   FMultiPlay := false;
   FSorting   := true;
   FPlayMode  := pmSingle;
@@ -2197,6 +2201,8 @@ begin
       FTimer.OnTimer:=nil;
       FreeAndNil(FTimer);
     end;
+
+    if assigned(FSysInfo) then FreeAndNil(FSysInfo);
 
     if FIsPlaying or FIsPausing then stop;
     sleep(100);
@@ -2233,6 +2239,39 @@ begin
   try
     FItems.Insert(Index, Value);
     FCount:=FItems.Count;
+  except
+
+  end;
+end;
+
+function TPlayList.checkFile(index: integer): integer;
+var
+  rExt:string;
+begin
+  result:=index;
+  try
+    while not FileExists(TPlayListItem(FItems[result]).Path) do
+    begin
+      result:=result+1;
+      if result>=FItems.Count then
+      begin
+        //result:=Fitems.Count-1;
+        result:=-1;
+        break;
+      end;
+    end ;
+
+    repeat
+      rExt:=ExtractFileExt(TPlayListItem(FItems[result]).Path);
+      result:=result+1;
+      if result>FItems.Count then
+      begin
+        //result:=Fitems.Count-1;
+        result:=0;
+        break;
+      end;
+    until (Pos(UpperCase(rExt), UpperCase(FSysInfo.FileFilter))>0);
+    result:=result-1;
   except
 
   end;
@@ -2358,6 +2397,7 @@ begin
     end;
   finally
     aFT.Free;
+    FItemIndex:=0;
   end;
 end;
 
@@ -2525,10 +2565,16 @@ begin
   if (index=FItemIndex) and (FIsPlaying) then exit;
   try
     //if FIsPlaying then stop;
+    TPlayListItem(FItems[FItemIndex]).IsPlaying:=false;
+    TPlayListItem(FItems[FItemIndex]).IsPausing:=false;
     stop;
+
+    FItemIndex:=checkFile(index);
+    if FItemIndex=-1 then exit;
+
     if not assigned(FSound) then FSound := TSound.Create;
     //FSound.open(TPlayListItem(FItems[index]).Path);
-    FItemIndex:=index;
+
     FSound.FileName:=TPlayListItem(FItems[FItemIndex]).Path;
     FSound.play;
     TPlayListItem(FItems[FItemIndex]).IsPlaying:=FSound.isPlaying;
@@ -2613,13 +2659,16 @@ begin
     if assigned(FTimer) then FTimer.Enabled:=false;
 
     FIsPausing := false;
-    TPlayListItem(FItems[FItemIndex]).IsPausing := false;
     FIsPlaying := false;
-    TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
+    if FItemIndex>=0 then
+    begin
+      TPlayListItem(FItems[FItemIndex]).IsPausing := false;
+      TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
+    end;
     if assigned(FSound) then
     begin
       FSound.stop;
-      FSound.Free;
+      FreeAndNil(FSound);
     end;
     checkStatus;
   except

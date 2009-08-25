@@ -135,7 +135,7 @@ object MainForm: TMainForm
     object txtAudioTrack: TStaticText
       Left = 4
       Top = 61
-      Width = 208
+      Width = 23
       Height = 18
       AutoSize = False
       TabOrder = 3
@@ -265,7 +265,7 @@ object MainForm: TMainForm
     Width = 122
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
+    ItemHeight = 0
     TabOrder = 10
     OnChange = cbbDeviceTypeListChange
   end
@@ -275,7 +275,7 @@ object MainForm: TMainForm
     Width = 285
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
+    ItemHeight = 0
     TabOrder = 11
   end
   object radiogrpPlayMode: TRadioGroup
