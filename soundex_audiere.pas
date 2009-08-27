@@ -2645,7 +2645,7 @@ begin
         if FItemIndex>=FCount then
         begin
           FSound.Stop;
-          FSound.Free;
+          //FSound.Free;
           exit;
           break;
         end;
