@@ -25,6 +25,8 @@ uses
   Windows, SysUtils, Classes, Contnrs, Audiere, ExtCtrls, JclFileUtils;
 
 type
+  TErrorCode = (ecNoError, ecDevice, ecNoFile, ecLoading, ecOpening, ecPlaying, ecEnding, ecUnknwn);
+
 { TStopCallBack }
 {*
 * @brief
@@ -115,6 +117,7 @@ type
     FSeekable  : boolean;
     FRepeat    : boolean;
     FTags      : TStringList;
+    FErrorCode : TErrorCode;
   protected
     function  getName: string;
     function  isSeekable: Boolean;
@@ -312,7 +315,7 @@ type
     FMultiPlay : boolean;
     FSorting   : boolean;
     FIsPlaying : boolean;
-    FIsPausing : boolean;   
+    FIsPausing : boolean;
     FSortMode  : Integer;
     FCount     : Integer;
     FPlayMode  : TPlayMode;
@@ -324,6 +327,7 @@ type
     FSound     : TSound;
     FTimer     : TTimer;
     FFilter    : string;
+    FVolume    : Integer;
   protected
     function  GetAudio:TSound;
     procedure SetAudio(aSound: TSound);
@@ -791,10 +795,22 @@ begin
 //    pOutput   := nil;
 //    pSource   := nil;
 //    pDevice   := nil;
+
+    AdrSound  := nil;
+    AdrEffect := nil;
+    AdrMIDI   := nil;
+    AdrMusic  := nil;
+    AdrOutput := nil;
+    Adrsource := nil;
+    AdrDevice := nil;
+    pOutput   := nil;
+    pSource   := nil;
+    pDevice   := nil;
+
   except
 
   end;
-  inherited;
+  //inherited;
 end;
 
 {-------------------------------------------------------------------------------
@@ -1350,10 +1366,13 @@ begin
         begin
           AdrOutput.Stop;
           AdrOutput.Unref;
-          //AdrOutput:=nil;
+          AdrOutput:=nil;
         end
       else
-        AdrOutput.Unref;
+        begin
+          AdrOutput.Unref;
+          AdrOutput:=nil;
+        end;
     end;
   except
   
@@ -1380,11 +1399,12 @@ end;
 constructor TSound.Create;
 begin
   try
-    if not assigned(pDevice) then
+    //if not assigned(pDevice) then
+    if not assigned(AdrDevice) then
     begin
-      //AdrDevice := AdrOpenDevice('', '');
-      pDevice := AdrOpenDevice('', '');
-      AdrDevice := pDevice;
+      AdrDevice := AdrOpenDevice('', '');
+      //pDevice := AdrOpenDevice('', '');
+      //AdrDevice := pDevice;
       FDevice   := AdrDevice.getName;
   //    if Assigned(AdrDevice) then
   //        AdrDevice.Ref;
@@ -1412,6 +1432,8 @@ end;
 destructor TSound.Destroy;
 begin
   //if assigned(FTags) then FreeAndNil(FTags);
+  If FIsPlaying then stop;
+  if assigned(AdrDevice) then AdrDevice.UnRef;
   inherited;
 end;
 
@@ -1433,20 +1455,56 @@ end;
 procedure TSound.play;
 begin
   try
+    FErrorCode:=ecNoError;
+    if not assigned(AdrDevice) then
+    begin
+      AdrDevice := AdrOpenDevice('', '');
+      FDevice   := AdrDevice.getName;
+    end;
     if assigned(AdrDevice) then
     begin
-      if not FileExists(FFileName) then exit;
+      if not FileExists(FFileName) then
+      begin
+        FErrorCode:=ecNoFile;
+        exit;
+      end;
 
-      pSource := AdrOpenSampleSource(PAnsiChar(FFileName),FF_AUTODETECT);
-      AdrSource := pSource;
+//      pSource := AdrOpenSampleSource(PAnsiChar(FFileName),FF_AUTODETECT);
+//      if pSource = nil then
+//      begin
+//        FErrorCode:=ecLoading;
+//        exit;
+//      end;
+//      AdrSource := pSource;
       //AdrSource.ref;
+      AdrSource := AdrOpenSampleSource(PAnsiChar(FFileName),FF_AUTODETECT);
+      if AdrSource = nil then
+      begin
+        FErrorCode:=ecLoading;
+        exit;
+      end;
 
-      pOutput := AdrOpenSound(AdrDevice, AdrSource, true);
-      AdrOutput := pOutput;
-      AdrSound := pOutput;
+//      pOutput := AdrOpenSound(AdrDevice, AdrSource, true);
+//      if pOutput = nil then
+//      begin
+//        FErrorCode:=ecOpening;
+//        exit;
+//      end;
+//      AdrOutput := pOutput;
+//      AdrSound := pOutput;
+      AdrOutput := AdrOpenSound(AdrDevice, AdrSource, true);
+      if AdrOutput = nil then
+      begin
+        FErrorCode:=ecOpening;
+        exit;
+      end;
 
-      AdrSound.Ref;
-      AdrSound.Play;
+//      AdrSound.SetVolume(FVolume/100);
+//      AdrSound.Ref;
+//      AdrSound.Play;
+      AdrOutput.SetVolume(FVolume/100);
+      AdrOutput.Ref;
+      AdrOutput.Play;
       getTags;
     end;
   except
@@ -2482,7 +2540,7 @@ begin
 //
   if not IsPlaying then exit;
   if FSound.isPausing then exit;
-
+  if assigned(FSound) then FVolume:=FSound.Volume;
   try
     case FPlayMode of
       pmSingle    : begin
@@ -2504,7 +2562,7 @@ begin
 //                        TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
                         if FItemIndex+1<FCount then
                           begin
-                            sleep(100);
+                            sleep(50);
                             play(FItemIndex+1);
                           end
                         else
@@ -2518,7 +2576,7 @@ begin
 //                        FSound.stop;
 //                        FSound.Free;
 //                        TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
-                        sleep(100);
+                        sleep(50);
                         play(Random(FCount));
                       end;
                     end;
@@ -2536,7 +2594,7 @@ begin
 //                        FSound.Free;
 //                        TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
                         if FItemIndex+1>=FCount then FItemIndex:=-1;
-                        sleep(100);
+                        sleep(50);
                         play(FItemIndex+1);
                       end;
                     end;
@@ -2564,19 +2622,35 @@ begin
   if index>FCount-1 then exit;
   if (index=FItemIndex) and (FIsPlaying) then exit;
   try
-    //if FIsPlaying then stop;
+    if assigned(FTimer) then FTimer.Enabled:=false;
+
     TPlayListItem(FItems[FItemIndex]).IsPlaying:=false;
     TPlayListItem(FItems[FItemIndex]).IsPausing:=false;
     stop;
+    sleep(50);
 
     FItemIndex:=checkFile(index);
     if FItemIndex=-1 then exit;
 
     if not assigned(FSound) then FSound := TSound.Create;
-    //FSound.open(TPlayListItem(FItems[index]).Path);
 
-    FSound.FileName:=TPlayListItem(FItems[FItemIndex]).Path;
-    FSound.play;
+    //FSound.open(TPlayListItem(FItems[index]).Path);
+    repeat
+      FSound.FileName:=TPlayListItem(FItems[FItemIndex]).Path;
+      FSound.SetVolume(FVolume);
+      FSound.play;
+      if FSound.FErrorCode<>ecNoError then
+      begin
+        FItemIndex:=FItemIndex+1;
+        if FItemIndex>=FCount then
+        begin
+          FSound.Stop;
+          FSound.Free;
+          exit;
+          break;
+        end;
+      end;
+    until FSound.FErrorCode=ecNoError;
     TPlayListItem(FItems[FItemIndex]).IsPlaying:=FSound.isPlaying;
     TPlayListItem(FItems[FItemIndex]).IsPausing:=False;
     FIsPlaying:=FSound.isPlaying;
@@ -2660,7 +2734,7 @@ begin
 
     FIsPausing := false;
     FIsPlaying := false;
-    if FItemIndex>=0 then
+    if (FItemIndex>=0) and (FItemIndex<FCount) then
     begin
       TPlayListItem(FItems[FItemIndex]).IsPausing := false;
       TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
@@ -2668,7 +2742,8 @@ begin
     if assigned(FSound) then
     begin
       FSound.stop;
-      FreeAndNil(FSound);
+      //FSound.Free;
+      //FreeAndNil(FSound);
     end;
     checkStatus;
   except
