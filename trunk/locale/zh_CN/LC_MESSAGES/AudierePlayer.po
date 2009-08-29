@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Audiere Player\\nPOT-Creation-Date: 2009-06-20 16:23\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-13 23:34+0800\n"
-"PO-Revision-Date: 2009-08-13 23:35+0800\n"
+"POT-Creation-Date: 2009-08-29 11:33+0800\n"
+"PO-Revision-Date: 2009-08-29 11:34+0800\n"
 "Last-Translator: NetCharm <netcharm@163.com>\n"
 "Language-Team: NetCharm <netcharm@163.com>\n"
 "MIME-Version: 1.0\n"
@@ -22,175 +22,253 @@ msgstr ""
 "X-Poedit-SearchPath-0: ..\\..\\..\n"
 
 #: /MyDocs/D2006/MultiMedia/AudierePlayer/AudierePlayer.dpr:36
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/AudierePlayer.dpr:36
 msgid "Audiere Player Demo"
 msgstr "Audiere播放器演示"
 
 #. MainForm..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:6
+#. MainForm..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:6
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:7
 msgid "MainForm"
 msgstr ""
 
 #. MainForm..Font.Name
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:13
+#. MainForm..Font.Name
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:13
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:14
 msgid "Tahoma"
 msgstr ""
 
 #. MainForm..grpAudioControl..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:26
+#. MainForm..grpAudioControl..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:26
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:27
 msgid "Play Control"
 msgstr "播放控制"
 
 #. MainForm..grpAudioControl..btnAudioPlay..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:47
+#. MainForm..grpAudioControl..btnAudioPlay..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:47
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:48
 msgid "Play"
 msgstr "播放"
 
 #. MainForm..grpAudioControl..btnAudioStop..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:56
+#. MainForm..grpAudioControl..btnAudioStop..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:56
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:57
 msgid "Stop"
 msgstr "停止"
 
 #. MainForm..grpAudioControl..txtAudioVolume..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:79
+#. MainForm..grpAudioControl..txtAudioVolume..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:79
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:80
 msgid "Volume:"
 msgstr "音量："
 
 #. MainForm..grpAudioControl..txtPosition..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:90
+#. MainForm..grpAudioControl..txtPosition..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:90
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:91
 msgid "Position:"
 msgstr "进度："
 
 #. MainForm..grpAudioControl..btnAudioPause..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:99
+#. MainForm..grpAudioControl..btnAudioPause..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:99
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:100
 msgid "Pause"
 msgstr "暂停"
 
 #. MainForm..grpAudioInfo..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:109
+#. MainForm..grpAudioInfo..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:109
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:110
 msgid "Audio Info"
 msgstr "音频信息"
 
 #. MainForm..grpFileControl..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:157
+#. MainForm..grpFileControl..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:157
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:158
 msgid "File List"
 msgstr "文件列表"
 
 #. MainForm..grpFileControl..btnFileOpen..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:164
+#. MainForm..grpFileControl..btnFileOpen..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:164
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:165
 msgid "Open"
 msgstr "打开"
 
 #. MainForm..grpFileControl..btnFileClose..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:173
+#. MainForm..grpFileControl..btnFileClose..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:173
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:174
 msgid "Close"
 msgstr "关闭"
 
 #. MainForm..grpFileControl..lvPlayList......Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:189
+#. MainForm..grpFileControl..lvPlayList......Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:189
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:190
 msgid "Name"
 msgstr "歌曲名称"
 
 #. MainForm..btnTestSound..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:208
+#. MainForm..btnTestSound..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:208
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:219
 msgid "Sound Test"
 msgstr "声音测试"
 
 #. MainForm..btnTestMusic..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:217
+#. MainForm..btnTestMusic..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:217
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:228
 msgid "Music Test"
 msgstr "乐曲测试"
 
 #. MainForm..btnTestEffect..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:226
+#. MainForm..btnTestEffect..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:226
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:237
 msgid "Effect Test"
 msgstr "效果音测试"
 
 #. MainForm..btnTestWaveGen..Caption
 #. MainForm..radioGrpWaveGen..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:235
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:244
+#. MainForm..btnTestWaveGen..Caption
+#. MainForm..radioGrpWaveGen..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:235
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:244
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:246
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:255
 msgid "Wave Gen"
 msgstr "波形发生器"
 
 #. MainForm..radioGrpWaveGen....Items.Strings
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:247
+#. MainForm..radioGrpWaveGen....Items.Strings
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:247
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:258
 msgid "Tone"
 msgstr "单音"
 
 #. MainForm..radioGrpWaveGen....Items.Strings
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:248
+#. MainForm..radioGrpWaveGen....Items.Strings
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:248
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:259
 msgid "Square Wave"
 msgstr "方波"
 
 #. MainForm..radioGrpWaveGen....Items.Strings
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:249
+#. MainForm..radioGrpWaveGen....Items.Strings
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:249
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:260
 msgid "White Noise"
 msgstr "白噪声"
 
 #. MainForm..radioGrpWaveGen....Items.Strings
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:250
+#. MainForm..radioGrpWaveGen....Items.Strings
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:250
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:261
 msgid "Pink Noise"
 msgstr "粉红噪声"
 
 #. MainForm..btnGetInfo..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:258
+#. MainForm..btnGetInfo..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:258
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:269
 msgid "Info"
 msgstr "系统信息"
 
 #. MainForm..radiogrpPlayMode..Caption
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:286
+#. MainForm..radiogrpPlayMode..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:286
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:297
 msgid "Play Mode"
 msgstr "播放模式"
 
 #. MainForm..radiogrpPlayMode....Items.Strings
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:290
+#. MainForm..radiogrpPlayMode....Items.Strings
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:290
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:301
 msgid "Single"
 msgstr "单曲播放"
 
 #. MainForm..radiogrpPlayMode....Items.Strings
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:291
+#. MainForm..radiogrpPlayMode....Items.Strings
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:291
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:302
 msgid "Sequence"
 msgstr "顺序播放"
 
 #. MainForm..radiogrpPlayMode....Items.Strings
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:292
+#. MainForm..radiogrpPlayMode....Items.Strings
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:292
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:303
 msgid "Random"
 msgstr "随机播放"
 
 #. MainForm..radiogrpPlayMode....Items.Strings
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:293
+#. MainForm..radiogrpPlayMode....Items.Strings
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:293
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:304
 msgid "Repeat"
 msgstr "单曲重复"
 
 #. MainForm..radiogrpPlayMode....Items.Strings
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:294
+#. MainForm..radiogrpPlayMode....Items.Strings
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:294
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:305
 msgid "Repeat All"
 msgstr "全部重复"
 
 #. MainForm..dlgOpen..Filter
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:299
+#. MainForm..dlgOpen..Filter
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.dfm:299
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:310
 msgid "mp3 file (*.mp3;*.mp2)|*.mp3; *.mp2|ogg file (*.ogg)|*.ogg"
 msgstr ""
 
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.pas:176
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.pas:179
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.pas:194
 msgid "Audio Device"
 msgstr "音频输出设备"
 
 #. cbbDeviceTypeList.Items.Add(_('MIDI Device'));
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.pas:178
+#. cbbDeviceTypeList.Items.Add(_('MIDI Device'));
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.pas:181
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.pas:196
 msgid "CD Device"
 msgstr "可播放CD驱动器"
 
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.pas:179
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/main.pas:182
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.pas:197
 msgid "Supported File"
 msgstr "支持的文件格式"
 
 #. Programmer's name for it: DEVICE_AUTO_DETECT
 #. Programmer's name for it: DEVICE_AUTO_DETECT
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/soundex_audiere.pas:377
-#: /MyDocs/D2006/MultiMedia/AudierePlayer/soundex_audiere_bug.pas:373
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/CodeGoogle/soundex_audiere.pas:387
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/soundex_audiere.pas:390
 msgid "AutoDetect: Choose default device"
 msgstr "自动侦测：选择缺省设备"
+
+#. MainForm..grpFileControl..btnFileClear..Caption
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.dfm:209
+msgid "Clear"
+msgstr "清空"
+
+#. MainForm.Caption:='['+txtAudioAlbum.Caption+'] - ['+txtAudioArtist.Caption+' - '+txtAudioTitle.Caption+']';
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.pas:529
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.pas:530
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.pas:531
+#: /MyDocs/D2006/MultiMedia/AudierePlayer/main.pas:532
+msgid "None"
+msgstr "无"
 
 #~ msgid "txtAudioTitle"
 #~ msgstr "音频标题"
