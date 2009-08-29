@@ -71,7 +71,7 @@ type
     function getFileFormat:TStringList;
 
   public
-    constructor Create;
+    constructor Create(AOwner: TComponent);
     destructor Destroy; override;
   published
     property DiscDevice  : TStringList read getDiscDevice;
@@ -136,7 +136,7 @@ type
 
     function  getTags:TStringList;
   public
-    constructor Create;
+    constructor Create(AOwner: TComponent);
     destructor Destroy; override;
 
     function  isPlaying: Boolean;
@@ -178,7 +178,7 @@ type
   protected
 
   public
-    constructor Create;
+    constructor Create(AOwner: TComponent);
     destructor Destroy; override;
   published
     //procedure play(aName:string);override;
@@ -197,7 +197,7 @@ type
   protected
 
   public
-    constructor Create;
+    constructor Create(AOwner: TComponent);
     destructor Destroy; override;
   published
     procedure play;override;
@@ -214,7 +214,7 @@ type
   protected
 
   public
-    constructor Create;
+    constructor Create(AOwner: TComponent);
     destructor Destroy; override;
   published
     property mode    :TAdrSoundEffectType   read FType write FType;
@@ -244,7 +244,7 @@ type
     procedure openDoor;
     procedure closeDoor;
   public
-    constructor Create;
+    constructor Create(AOwner: TComponent);
     destructor Destroy; override;
   published
     property HasCD       :boolean       read isContainsCD;
@@ -269,7 +269,7 @@ type
   protected
 
   public
-    constructor Create;
+    constructor Create(AOwner: TComponent);
     destructor Destroy; override;
 
   published
@@ -323,12 +323,14 @@ type
     FFadingOut : boolean;
     FItemIndex : integer;
     FLastIndex : integer;
+    FChanged   : boolean;
     FItems     : TObjectList;
     FSound     : TSound;
     FTimer     : TTimer;
     FFilter    : string;
     FVolume    : Integer;
   protected
+    function  GetChanged:boolean;
     function  GetAudio:TSound;
     procedure SetAudio(aSound: TSound);
     function  GetItem(Index: Integer):TPlayListItem;
@@ -342,7 +344,7 @@ type
 
   public
     //constructor Create(AOwner: TComponent);
-    constructor Create;
+    constructor Create(AOwner: TComponent);
     destructor  Destroy; override;
 
     procedure LoadFromFile(aFile: string);
@@ -367,6 +369,7 @@ type
     property FileFilter           : string         read FFilter;
     property PlayMode             : TPlayMode      read FPlayMode  write FPlayMode;
     property Audio                : TSound         read GetAudio;//   write FSound;
+    property Changed              : boolean        read GetChanged;//   write FSound;
 
     procedure play(index: integer);
     procedure pause(OnOff:boolean);
@@ -501,8 +504,9 @@ end;
 * @brief
 *}
 //******************************************************************************
-constructor TWaveGenerator.Create;
+constructor TWaveGenerator.Create(AOwner: TComponent);
 begin
+  inherited;
   try
     if not assigned(AdrDevice) then
       AdrDevice := AdrOpenDevice('', '');
@@ -741,8 +745,9 @@ end;
 * @brief
 *}
 //******************************************************************************
-constructor TAudio.Create;
+constructor TAudio.Create(AOwner: TComponent);
 begin
+  inherited;
   FDevice    := '';
   FFileName  := '';
   FIsPlaying := false;
@@ -810,7 +815,7 @@ begin
   except
 
   end;
-  //inherited;
+  inherited;
 end;
 
 {-------------------------------------------------------------------------------
@@ -1398,6 +1403,7 @@ end;
 //******************************************************************************
 constructor TSound.Create;
 begin
+  inherited;
   try
     //if not assigned(pDevice) then
     if not assigned(AdrDevice) then
@@ -1529,8 +1535,9 @@ end;
 * @brief
 *}
 //******************************************************************************
-constructor TMusic.Create;
+constructor TMusic.Create(AOwner: TComponent);
 begin
+  inherited;
   //FTags:=TStringList.Create;
   try
     if not assigned(AdrDevice) then
@@ -1629,6 +1636,7 @@ end;
 //******************************************************************************
 constructor TEffect.Create;
 begin
+  inherited;
   try
     if not assigned(AdrDevice) then
     begin
@@ -1776,6 +1784,7 @@ end;
 //******************************************************************************
 constructor TDisc.Create;
 begin
+  inherited;
   try
     if not assigned(AdrOutput) then
       AdrOutput := AdrOpenCDDevice('');
@@ -2006,8 +2015,9 @@ end;
 * @brief
 *}
 //******************************************************************************
-constructor TAudioSystem.Create;
+constructor TAudioSystem.Create(AOwner: TComponent);
 begin
+  inherited;
   FVersion     := '';
   FDiscDevice  := TStringList.Create;
   FAudioDevice := TStringList.Create;
@@ -2227,9 +2237,10 @@ end;
 { TPlayList }
 
 //constructor TPlayList.Create(AOwner: TComponent);
-constructor TPlayList.Create;
+constructor TPlayList.Create(AOwner: TComponent);
 begin
-  FSysInfo   := TAudioSystem.Create;
+  inherited;
+  FSysInfo   := TAudioSystem.Create(AOwner);
   
   FMultiPlay := false;
   FSorting   := true;
@@ -2363,9 +2374,15 @@ end;
 procedure TPlayList.Delete(Index: Integer);
 begin
   try
+    if Index=FItemIndex then
+    begin
+      stop;
+      prev;
+    end;
     FItems.Delete(index);
     FCount:=FItems.Count;
-    FItemIndex:=-1;
+    if FCount<=0 then FItemIndex:=-1;
+
   except
 
   end;
@@ -2391,6 +2408,12 @@ begin
   except
 
   end;
+end;
+
+function TPlayList.GetChanged: boolean;
+begin
+  result:=FChanged;
+  FChanged:=false;
 end;
 
 function TPlayList.GetItem(Index: Integer): TPlayListItem;
@@ -2623,16 +2646,18 @@ begin
   if (index=FItemIndex) and (FIsPlaying) then exit;
   try
     if assigned(FTimer) then FTimer.Enabled:=false;
-
-    TPlayListItem(FItems[FItemIndex]).IsPlaying:=false;
-    TPlayListItem(FItems[FItemIndex]).IsPausing:=false;
-    stop;
-    sleep(50);
+    if FItemIndex>=0 then
+    begin
+      TPlayListItem(FItems[FItemIndex]).IsPlaying:=false;
+      TPlayListItem(FItems[FItemIndex]).IsPausing:=false;
+      stop;
+      sleep(50);
+    end;
 
     FItemIndex:=checkFile(index);
     if FItemIndex=-1 then exit;
 
-    if not assigned(FSound) then FSound := TSound.Create;
+    if not assigned(FSound) then FSound := TSound.Create(Self);
 
     //FSound.open(TPlayListItem(FItems[index]).Path);
     repeat
@@ -2655,7 +2680,8 @@ begin
     TPlayListItem(FItems[FItemIndex]).IsPausing:=False;
     FIsPlaying:=FSound.isPlaying;
     FIsPausing:=False;
-    
+    FChanged:=true;
+
     if assigned(FTimer) then FTimer.Enabled:=true;
   except
 
@@ -2745,6 +2771,7 @@ begin
       //FSound.Free;
       //FreeAndNil(FSound);
     end;
+
     checkStatus;
   except
 
@@ -2756,6 +2783,7 @@ end;
 
 constructor TPlayListItem.Create;
 begin
+  inherited;
   idx       := 0;
   Name      := '';
   Path      := '';

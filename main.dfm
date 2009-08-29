@@ -1,6 +1,7 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
+  ActiveControl = btnFileOpen
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'MainForm'
@@ -157,7 +158,7 @@ object MainForm: TMainForm
     Caption = 'File List'
     TabOrder = 0
     object btnFileOpen: TButton
-      Left = 8
+      Left = 6
       Top = 14
       Width = 48
       Height = 25
@@ -166,7 +167,7 @@ object MainForm: TMainForm
       OnClick = btnFileOpenClick
     end
     object btnFileClose: TButton
-      Left = 112
+      Left = 61
       Top = 14
       Width = 48
       Height = 25
@@ -192,12 +193,22 @@ object MainForm: TMainForm
       ColumnClick = False
       FlatScrollBars = True
       GridLines = True
+      HideSelection = False
       ReadOnly = True
       RowSelect = True
       ShowWorkAreas = True
-      TabOrder = 2
+      TabOrder = 3
       ViewStyle = vsReport
       OnDblClick = lvPlayListDblClick
+    end
+    object btnFileClear: TButton
+      Left = 116
+      Top = 14
+      Width = 48
+      Height = 25
+      Caption = 'Clear'
+      TabOrder = 2
+      OnClick = btnFileClearClick
     end
   end
   object btnTestSound: TButton
@@ -265,7 +276,7 @@ object MainForm: TMainForm
     Width = 122
     Height = 21
     Style = csDropDownList
-    ItemHeight = 0
+    ItemHeight = 13
     TabOrder = 10
     OnChange = cbbDeviceTypeListChange
   end
@@ -275,7 +286,7 @@ object MainForm: TMainForm
     Width = 285
     Height = 21
     Style = csDropDownList
-    ItemHeight = 0
+    ItemHeight = 13
     TabOrder = 11
   end
   object radiogrpPlayMode: TRadioGroup

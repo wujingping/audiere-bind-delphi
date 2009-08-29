@@ -38,6 +38,7 @@ type
     txtAudioComment: TStaticText;
     btnAudioPause: TButton;
     radiogrpPlayMode: TRadioGroup;
+    btnFileClear: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnFileOpenClick(Sender: TObject);
@@ -56,6 +57,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btnAudioPauseClick(Sender: TObject);
     procedure radiogrpPlayModeClick(Sender: TObject);
+    procedure btnFileClearClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -111,25 +113,38 @@ begin
   Application.Title:=AppTitle;
 end;
 
+procedure TMainForm.btnFileClearClick(Sender: TObject);
+begin
+  if assigned(playList) then playList.stop;
+  if assigned(playList) then playList.Clear;
+  lvPlaylist.Clear;
+end;
+
 procedure TMainForm.btnFileCloseClick(Sender: TObject);
 var
-  I: Integer;
+  idx:integer;
 begin
   if lvPlaylist.Items.Count<0then exit;
 
-  if lvPlaylist.ItemIndex>=0 then
+  idx:=lvPlaylist.ItemIndex;
+  if idx>=0 then
     begin
-      if playList.Items[lvPlaylist.ItemIndex].IsPlaying then
+      if playList.Items[idx].IsPlaying then
         playList.stop;
-      playList.Delete(lvPlaylist.ItemIndex);
+      playList.Delete(idx);
       lvPlaylist.Selected.Delete;
+      if idx>=lvPlayList.Items.Count then
+        idx:=lvPlayList.Items.Count-1
+      else if lvPlayList.Items.Count<=0 then
+        idx:=-1
+      else
+        idx:=idx;
+
+      lvPlaylist.ItemIndex:=idx;
     end
   else
     begin
       //for I := 0 to lvPlaylist.Items.Count - 1 do
-      if assigned(playList) then playList.stop;
-      if assigned(playList) then playList.Clear;
-      lvPlaylist.Clear;
     end;
 end;
 
@@ -188,7 +203,7 @@ procedure TMainForm.btnTestEffectClick(Sender: TObject);
 var
   effect:TEffect;
 begin
-  effect := TEffect.Create;
+  effect := TEffect.Create(self);
   try
     effect.FileName:=AppPath+'test.mp3';
     effect.Volume:=trackBarAudioVolume.Position;
@@ -215,7 +230,7 @@ procedure TMainForm.btnTestMusicClick(Sender: TObject);
 var
   midi:TMusic;
 begin
-  midi := TMusic.Create;
+  midi := TMusic.Create(self);
   try
   try
     midi.FileName:=AppPath+'test.mid';
@@ -233,7 +248,7 @@ procedure TMainForm.btnTestSoundClick(Sender: TObject);
 var
   wave:TSound;
 begin
-  wave := TSound.Create;
+  wave := TSound.Create(self);
   try
     wave.FileName:=AppPath+'test.it';
     wave.play;
@@ -250,10 +265,10 @@ var
   pink:TWaveGenerator;
   white:TWaveGenerator;
 begin
-  wave := TWaveGenerator.Create;
-  tone := TWaveGenerator.Create;
-  pink := TWaveGenerator.Create;
-  white:= TWaveGenerator.Create;
+  wave := TWaveGenerator.Create(self);
+  tone := TWaveGenerator.Create(self);
+  pink := TWaveGenerator.Create(self);
+  white:= TWaveGenerator.Create(self);
   try
     if radioGrpWaveGen.ItemIndex<0 then radioGrpWaveGen.ItemIndex:=3;
     case radioGrpWaveGen.ItemIndex of
@@ -342,10 +357,10 @@ begin
     trackBarAudioVolume.Position:=MyIni.ReadInteger('Setting','Volume',80);
 
     //if not soundEx_Audiere. AdrLoadDLL then Application.Terminate;
-    playList:= TPlayList.Create;
+    playList:= TPlayList.Create(self);
     playList.PlayMode:=pmSequence;
 
-    AudioSys := TAudioSystem.Create;
+    AudioSys := TAudioSystem.Create(self);
     btnGetInfo.Click;
 
     MainForm.Caption:=Application.Title+' - Audiere v'+AudioSys.Version;
@@ -389,8 +404,6 @@ begin
 end;
 
 procedure TMainForm.lvPlayListDblClick(Sender: TObject);
-var
-  I: Integer;
 begin
   if  lvPlayList.ItemIndex<0 then exit;
 
@@ -423,8 +436,25 @@ var
 begin
   //exit;
   try
-    if not assigned(playList) then exit;
-    if playList.ItemIndex<0 then exit;
+    if not assigned(playList) then
+    begin
+      Application.Title:=MainForm.Caption;
+      exit;
+    end;
+    if (playList.ItemIndex<0) or (playList.Count<=0) then
+    begin
+      Application.Title:=MainForm.Caption;
+      exit;
+//      if playList.IsPlaying then
+//        begin
+//          playList.ItemIndex:=1;
+//        end
+//      else
+//        begin
+//          Application.Title:=MainForm.Caption;
+//          exit;
+//        end;
+    end;
 
     if lvPlaylist.Items.Count>0 then
     begin
@@ -437,14 +467,20 @@ begin
       if assigned(playList.Audio) and (playList.Items[playList.ItemIndex].IsPausing) then
         begin
           lvPlaylist.Items[playList.ItemIndex].Checked:=not lvPlaylist.Items[playList.ItemIndex].Checked;
-          lvPlaylist.Items[playList.ItemIndex].Selected:=true;
-          lvPlaylist.Items[playList.ItemIndex].MakeVisible(false);
+          if playList.Changed then
+          begin
+            lvPlaylist.Items[playList.ItemIndex].Selected:=true;
+            lvPlaylist.Items[playList.ItemIndex].MakeVisible(false);
+          end;
         end
       else if assigned(playList.Audio) and (playList.Items[playList.ItemIndex].IsPlaying) then
         begin
           lvPlaylist.Items[playList.ItemIndex].Checked:=true;
-          lvPlaylist.Items[playList.ItemIndex].Selected:=true;
-          lvPlaylist.Items[playList.ItemIndex].MakeVisible(false);
+          if playList.Changed then
+          begin
+            lvPlaylist.Items[playList.ItemIndex].Selected:=true;
+            lvPlaylist.Items[playList.ItemIndex].MakeVisible(false);
+          end;
         end
       else
         lvPlaylist.Items[playList.ItemIndex].Checked:=false;
@@ -458,6 +494,7 @@ begin
           MainForm.Caption:=AppTitle;
           trackBarAudioPosition.Position:=0;
           trackBarAudioPosition.SelEnd:=0;
+          Application.Title:=AppTitle;
           exit;
         end;
         
@@ -475,26 +512,27 @@ begin
           trackBarAudioVolume.ShowSelRange:=true;
 
           if assigned(tags) then
-          begin
-            if tags.Count>0 then
-              begin
-                txtAudioTitle.Caption  := Tags.Values['title'];
-                txtAudioArtist.Caption := Tags.Values['artist'];
-                txtAudioAlbum.Caption  := Tags.Values['album'];
-                txtAudioTrack.Caption  := Tags.Values['track'];
-                txtAudioComment.Caption:= Tags.Values['comment'];
-                MainForm.Caption:='['+txtAudioAlbum.Caption+'] - ['+txtAudioArtist.Caption+' - '+txtAudioTitle.Caption+']';
-              end
-            else
-              begin
-                txtAudioTitle.Caption  := playList.Items[playList.ItemIndex].Name;
-                txtAudioArtist.Caption := '';
-                txtAudioAlbum.Caption  := '';
-                txtAudioTrack.Caption  := '';
-                txtAudioComment.Caption:= '';
-                MainForm.Caption:=txtAudioTitle.Caption;
-              end;
-          end;
+            begin
+              if tags.Count>0 then
+                begin
+                  txtAudioTitle.Caption  := Tags.Values['title'];
+                  txtAudioArtist.Caption := Tags.Values['artist'];
+                  txtAudioAlbum.Caption  := Tags.Values['album'];
+                  txtAudioTrack.Caption  := Tags.Values['track'];
+                  txtAudioComment.Caption:= Tags.Values['comment'];
+                  //MainForm.Caption:='['+txtAudioAlbum.Caption+'] - ['+txtAudioArtist.Caption+' - '+txtAudioTitle.Caption+']';
+                end;
+            end
+          else
+            begin
+              txtAudioTitle.Caption  := playList.Items[playList.ItemIndex].Name;
+              txtAudioArtist.Caption := _('None');
+              txtAudioAlbum.Caption  := _('None');
+              txtAudioTrack.Caption  := _('None');
+              txtAudioComment.Caption:= _('None');
+              //MainForm.Caption:=txtAudioTitle.Caption;
+            end;
+          MainForm.Caption:=SysUtils.format('[%d/%d]:[%s] - [%s - %s]',[playList.ItemIndex+1, playList.Count, txtAudioAlbum.Caption, txtAudioArtist.Caption, txtAudioTitle.Caption ]);
         end;
       end
     else
