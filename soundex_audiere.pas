@@ -2378,7 +2378,10 @@ begin
     begin
       stop;
       prev;
-    end;
+    end
+    else if Index<FItemIndex then
+      FItemIndex:=FItemIndex-1;
+      
     FItems.Delete(index);
     FCount:=FItems.Count;
     if FCount<=0 then FItemIndex:=-1;

@@ -445,15 +445,6 @@ begin
     begin
       Application.Title:=MainForm.Caption;
       exit;
-//      if playList.IsPlaying then
-//        begin
-//          playList.ItemIndex:=1;
-//        end
-//      else
-//        begin
-//          Application.Title:=MainForm.Caption;
-//          exit;
-//        end;
     end;
 
     if lvPlaylist.Items.Count>0 then
