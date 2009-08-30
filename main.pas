@@ -58,6 +58,8 @@ type
     procedure btnAudioPauseClick(Sender: TObject);
     procedure radiogrpPlayModeClick(Sender: TObject);
     procedure btnFileClearClick(Sender: TObject);
+    procedure trackBarAudioPositionEndDrag(Sender, Target: TObject; X,
+      Y: Integer);
   private
     { Private declarations }
   public
@@ -482,10 +484,17 @@ begin
       begin
         if not playList.IsPlaying then
         begin
-          MainForm.Caption:=AppTitle;
           trackBarAudioPosition.Position:=0;
           trackBarAudioPosition.SelEnd:=0;
-          Application.Title:=AppTitle;
+
+          txtAudioTitle.Caption  := '';
+          txtAudioArtist.Caption := '';
+          txtAudioAlbum.Caption  := '';
+          txtAudioTrack.Caption  := '';
+          txtAudioComment.Caption:= '';
+          MainForm.Caption       := AppTitle;
+          Application.Title      := MainForm.Caption;
+
           exit;
         end;
         
@@ -536,6 +545,12 @@ begin
   except
 
   end;
+end;
+
+procedure TMainForm.trackBarAudioPositionEndDrag(Sender, Target: TObject; X,
+  Y: Integer);
+begin
+//
 end;
 
 procedure TMainForm.trackBarAudioVolumeChange(Sender: TObject);
