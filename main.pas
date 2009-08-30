@@ -502,17 +502,14 @@ begin
           trackBarAudioVolume.SelEnd:=trackBarAudioVolume.Position;
           trackBarAudioVolume.ShowSelRange:=true;
 
-          if assigned(tags) then
+          if assigned(tags) and (tags.Count>0) then
             begin
-              if tags.Count>0 then
-                begin
-                  txtAudioTitle.Caption  := Tags.Values['title'];
-                  txtAudioArtist.Caption := Tags.Values['artist'];
-                  txtAudioAlbum.Caption  := Tags.Values['album'];
-                  txtAudioTrack.Caption  := Tags.Values['track'];
-                  txtAudioComment.Caption:= Tags.Values['comment'];
-                  //MainForm.Caption:='['+txtAudioAlbum.Caption+'] - ['+txtAudioArtist.Caption+' - '+txtAudioTitle.Caption+']';
-                end;
+              txtAudioTitle.Caption  := Tags.Values['title'];
+              txtAudioArtist.Caption := Tags.Values['artist'];
+              txtAudioAlbum.Caption  := Tags.Values['album'];
+              txtAudioTrack.Caption  := Tags.Values['track'];
+              txtAudioComment.Caption:= Tags.Values['comment'];
+              //MainForm.Caption:='['+txtAudioAlbum.Caption+'] - ['+txtAudioArtist.Caption+' - '+txtAudioTitle.Caption+']';
             end
           else
             begin
