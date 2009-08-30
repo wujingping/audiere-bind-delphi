@@ -1462,6 +1462,7 @@ procedure TSound.play;
 begin
   try
     FErrorCode:=ecNoError;
+    FIsPausing:=false;
     if not assigned(AdrDevice) then
     begin
       AdrDevice := AdrOpenDevice('', '');
@@ -2564,7 +2565,7 @@ end;
 procedure TPlayList.onTimer(Sender: TObject);
 begin
 //
-  if not IsPlaying then exit;
+  if (not IsPlaying) and (not IsPausing) then exit;
   if FSound.isPausing then exit;
   if assigned(FSound) then FVolume:=FSound.Volume;
   try

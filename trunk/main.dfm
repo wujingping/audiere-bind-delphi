@@ -32,10 +32,12 @@ object MainForm: TMainForm
       Width = 157
       Height = 24
       Max = 100
+      ParentShowHint = False
       Frequency = 5
       Position = 80
       PositionToolTip = ptBottom
       SelEnd = 80
+      ShowHint = True
       TabOrder = 0
       ThumbLength = 12
       OnChange = trackBarAudioVolumeChange
@@ -65,10 +67,13 @@ object MainForm: TMainForm
       Height = 24
       Enabled = False
       Max = 100
+      ParentShowHint = False
       Frequency = 5
       PositionToolTip = ptBottom
+      ShowHint = True
       TabOrder = 2
       ThumbLength = 12
+      OnEndDrag = trackBarAudioPositionEndDrag
     end
     object txtAudioVolume: TStaticText
       Left = 8
