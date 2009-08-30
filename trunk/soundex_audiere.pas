@@ -2570,13 +2570,14 @@ begin
   try
     case FPlayMode of
       pmSingle    : begin
-                      if (not FSound.isPlaying) And (assigned(FSound))then
+                      //if (not FSound.isPlaying) And (assigned(FSound))then
+                      if (assigned(FSound))then
                       begin
                         FSound.Loop:=false;
 //                        FSound.stop;
 //                        FSound.Free;
 //                        TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
-                        stop;
+                        if not (FSound.IsPlaying) then stop;
                       end;
                     end;
       pmSequence  : begin
@@ -2607,7 +2608,8 @@ begin
                       end;
                     end;
       pmRepeat    : begin
-                      if (FSound.isPlaying) And (assigned(FSound))then
+                      //if (FSound.isPlaying) And (assigned(FSound))then
+                      if (assigned(FSound))then
                       begin
                         FSound.Loop:=true;
                       end;
