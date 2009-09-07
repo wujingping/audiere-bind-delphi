@@ -73,7 +73,6 @@ object MainForm: TMainForm
       ShowHint = True
       TabOrder = 2
       ThumbLength = 12
-      OnEndDrag = trackBarAudioPositionEndDrag
     end
     object txtAudioVolume: TStaticText
       Left = 8
