@@ -58,6 +58,7 @@ type
     procedure btnAudioPauseClick(Sender: TObject);
     procedure radiogrpPlayModeClick(Sender: TObject);
     procedure btnFileClearClick(Sender: TObject);
+    procedure trackBarAudioPositionChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -444,6 +445,15 @@ begin
     end;
     if (playList.ItemIndex<0) or (playList.Count<=0) then
     begin
+      if (playList.Count>0) then
+      begin
+        for I := lvPlaylist.TopItem.Index to lvPlaylist.TopItem.Index+lvPlaylist.VisibleRowCount do
+        begin
+          if I>=lvPlaylist.Items.Count then break;
+          if I<>playList.ItemIndex then lvPlaylist.Items[I].Checked:=false;
+        end;
+      end;
+
       Application.Title:=MainForm.Caption;
       exit;
     end;
@@ -478,7 +488,6 @@ begin
         end
       else
         lvPlaylist.Items[playList.ItemIndex].Checked:=false;
-
     end;
 
     if assigned(playList.Audio) then
@@ -501,37 +510,13 @@ begin
 
         with playList.Audio do
         begin
+          if Changed then changed:=false;
+
           trackBarAudioPosition.Enabled:=Seekable;
 
-          if Changed then
-            begin
-              trackBarAudioPosition.Max:=Length-1;
-              trackBarAudioPosition.Position := Position;
-              trackBarAudioPosition.SelEnd   := trackBarAudioPosition.Position;
-              changed:=false;
-            end
-          else
-            begin
-              if (abs(Position-trackBarAudioPosition.Position)<=32767) then
-                begin
-
-                  trackBarAudioPosition.Max:=Length-1;
-                  trackBarAudioPosition.Position := Position;
-                  trackBarAudioPosition.SelEnd   := trackBarAudioPosition.Position;
-
-                  //trackBarAudioPosition.Position := Position*100 Div Length;
-                  //trackBarAudioPosition.SelEnd   := trackBarAudioPosition.Position;
-                end
-              else
-                begin
-                  if Seekable then
-                  begin
-                      Position := trackBarAudioPosition.Position;
-                      trackBarAudioPosition.SelEnd   := trackBarAudioPosition.Position;
-                      //trackBarAudioPosition.tag:=0;
-                  end;
-                end;
-            end;
+          trackBarAudioPosition.Max:=Length-1;
+          trackBarAudioPosition.Position := Position;
+          trackBarAudioPosition.SelEnd   := trackBarAudioPosition.Position;
 
           //trackBarAudioVolume.Position:=Volume;
           Volume:=trackBarAudioVolume.Position;
@@ -571,6 +556,29 @@ begin
     Application.Title:=MainForm.Caption;
   except
 
+  end;
+end;
+
+procedure TMainForm.trackBarAudioPositionChange(Sender: TObject);
+begin
+  if ActiveControl<>Sender then exit;
+
+  if not assigned(playList.Audio) then
+  begin
+    trackBarAudioPosition.Position:=0;
+    exit;
+  end;
+
+  with playList.Audio do
+  begin
+    if Seekable then
+    begin
+      if abs(Position-trackBarAudioPosition.Position)>32767 then
+      begin
+        Position := trackBarAudioPosition.Position;
+        trackBarAudioPosition.SelEnd := trackBarAudioPosition.Position;
+      end;
+    end;
   end;
 end;
 

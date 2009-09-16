@@ -2343,7 +2343,7 @@ begin
     until (Pos(UpperCase(rExt), UpperCase(FSysInfo.FileFilter))>0);
     result:=result-1;
   except
-
+    result:=-1;
   end;
 end;
 
@@ -2661,7 +2661,12 @@ begin
     end;
 
     FItemIndex:=checkFile(index);
-    if FItemIndex=-1 then exit;
+    if FItemIndex=-1 then
+    begin
+      IsPlaying:=false;
+      IsPausing:=false;
+      exit;
+    end;
 
     if not assigned(FSound) then FSound := TSound.Create(Self);
 
