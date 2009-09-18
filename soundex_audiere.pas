@@ -2564,30 +2564,30 @@ end;
 
 procedure TPlayList.onTimer(Sender: TObject);
 begin
-//
+//exit;
   if (not IsPlaying) and (not IsPausing) then exit;
-  if FSound.isPausing then exit;
-  if assigned(FSound) then FVolume:=FSound.Volume;
+  if not assigned(FSound) then exit;
+
+  if FSound.isPlaying then
+  begin
+    FVolume:=FSound.Volume;
+    FSound.Loop:=false;
+  end;
+
   try
+    //exit;
     case FPlayMode of
       pmSingle    : begin
                       //if (not FSound.isPlaying) And (assigned(FSound))then
-                      if (assigned(FSound))then
+                      //if (assigned(FSound))then
                       begin
-                        FSound.Loop:=false;
-//                        FSound.stop;
-//                        FSound.Free;
-//                        TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
-                        if not (FSound.IsPlaying) then stop;
+                        if not ((FSound.isPlaying or FSound.isPausing)) then stop;
                       end;
                     end;
       pmSequence  : begin
-                      if (not FSound.isPlaying) And (assigned(FSound))then
+                      //if (not FSound.isPlaying) And (assigned(FSound)) then
+                      if (not (FSound.isPlaying or FSound.isPausing)) then
                       begin
-                        FSound.Loop:=false;
-//                        FSound.stop;
-//                        FSound.Free;
-//                        TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
                         if FItemIndex+1<FCount then
                           begin
                             sleep(50);
@@ -2598,36 +2598,29 @@ begin
                       end;
                     end;
       pmRandom    : begin
-                      if (not FSound.isPlaying) And (assigned(FSound))then
+                      //if (not FSound.isPlaying) And (assigned(FSound))then
+                      if (not (FSound.isPlaying or FSound.isPausing)) then
                       begin
-                        FSound.Loop:=false;
-//                        FSound.stop;
-//                        FSound.Free;
-//                        TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
                         sleep(50);
                         play(Random(FCount));
                       end;
                     end;
       pmRepeat    : begin
                       //if (FSound.isPlaying) And (assigned(FSound))then
-                      if (assigned(FSound))then
+                      //if (assigned(FSound))then
                       begin
                         FSound.Loop:=true;
                       end;
                     end;
       pmRepeatAll : begin
-                      if (not FSound.isPlaying) And (assigned(FSound))then
+                      //if (not FSound.isPlaying) And (assigned(FSound))then
+                      if (not (FSound.isPlaying or FSound.isPausing)) then
                       begin
-                        FSound.Loop:=false;
-//                        FSound.stop;
-//                        FSound.Free;
-//                        TPlayListItem(FItems[FItemIndex]).IsPlaying := false;
                         if FItemIndex+1>=FCount then FItemIndex:=-1;
                         sleep(50);
                         play(FItemIndex+1);
                       end;
                     end;
-
     end;
   except
 

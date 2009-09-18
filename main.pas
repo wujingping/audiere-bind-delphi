@@ -469,12 +469,12 @@ begin
       if assigned(playList.Audio) and (playList.Items[playList.ItemIndex].IsPausing) then
         begin
           lvPlaylist.Items[playList.ItemIndex].Checked:=not lvPlaylist.Items[playList.ItemIndex].Checked;
-          if playList.Changed then
-          begin
-            changed:=true;
-            lvPlaylist.Items[playList.ItemIndex].Selected:=true;
-            lvPlaylist.Items[playList.ItemIndex].MakeVisible(false);
-          end;
+          //if playList.Changed then
+          //begin
+          //  changed:=true;
+          //  lvPlaylist.Items[playList.ItemIndex].Selected:=true;
+          //  lvPlaylist.Items[playList.ItemIndex].MakeVisible(false);
+          //end;
         end
       else if assigned(playList.Audio) and (playList.Items[playList.ItemIndex].IsPlaying) then
         begin
@@ -492,7 +492,7 @@ begin
 
     if assigned(playList.Audio) then
       begin
-        if not playList.IsPlaying then
+        if not (playList.IsPlaying or playList.IsPausing) then
         begin
           trackBarAudioPosition.Position:=0;
           trackBarAudioPosition.SelEnd:=0;
@@ -510,38 +510,45 @@ begin
 
         with playList.Audio do
         begin
-          if Changed then changed:=false;
+          if Changed then
+          begin
+            changed:=false;
 
-          trackBarAudioPosition.Enabled:=Seekable;
+            trackBarAudioPosition.Enabled:=Seekable;
 
-          trackBarAudioPosition.Max:=Length-1;
-          trackBarAudioPosition.Position := Position;
-          trackBarAudioPosition.SelEnd   := trackBarAudioPosition.Position;
+            if assigned(tags) and (tags.Count>0) then
+              begin
+                txtAudioTitle.Caption  := Tags.Values['title'];
+                txtAudioArtist.Caption := Tags.Values['artist'];
+                txtAudioAlbum.Caption  := Tags.Values['album'];
+                txtAudioTrack.Caption  := Tags.Values['track'];
+                txtAudioComment.Caption:= Tags.Values['comment'];
+                //MainForm.Caption:='['+txtAudioAlbum.Caption+'] - ['+txtAudioArtist.Caption+' - '+txtAudioTitle.Caption+']';
+              end
+            else
+              begin
+                txtAudioTitle.Caption  := playList.Items[playList.ItemIndex].Name;
+                txtAudioArtist.Caption := _('None');
+                txtAudioAlbum.Caption  := _('None');
+                txtAudioTrack.Caption  := _('None');
+                txtAudioComment.Caption:= _('None');
+                //MainForm.Caption:=txtAudioTitle.Caption;
+              end;
+            MainForm.Caption:=SysUtils.format('[%d/%d]:[%s] - [%s - %s]',[playList.ItemIndex+1, playList.Count, txtAudioAlbum.Caption, txtAudioArtist.Caption, txtAudioTitle.Caption ]);
+          end;
+          
+          if IsPlaying then
+          begin
+            trackBarAudioPosition.Max:=Length-1;
+            trackBarAudioPosition.Position := Position;
+            trackBarAudioPosition.SelEnd   := trackBarAudioPosition.Position;
+          end;
 
           //trackBarAudioVolume.Position:=Volume;
           Volume:=trackBarAudioVolume.Position;
           trackBarAudioVolume.SelEnd:=trackBarAudioVolume.Position;
           trackBarAudioVolume.ShowSelRange:=true;
 
-          if assigned(tags) and (tags.Count>0) then
-            begin
-              txtAudioTitle.Caption  := Tags.Values['title'];
-              txtAudioArtist.Caption := Tags.Values['artist'];
-              txtAudioAlbum.Caption  := Tags.Values['album'];
-              txtAudioTrack.Caption  := Tags.Values['track'];
-              txtAudioComment.Caption:= Tags.Values['comment'];
-              //MainForm.Caption:='['+txtAudioAlbum.Caption+'] - ['+txtAudioArtist.Caption+' - '+txtAudioTitle.Caption+']';
-            end
-          else
-            begin
-              txtAudioTitle.Caption  := playList.Items[playList.ItemIndex].Name;
-              txtAudioArtist.Caption := _('None');
-              txtAudioAlbum.Caption  := _('None');
-              txtAudioTrack.Caption  := _('None');
-              txtAudioComment.Caption:= _('None');
-              //MainForm.Caption:=txtAudioTitle.Caption;
-            end;
-          MainForm.Caption:=SysUtils.format('[%d/%d]:[%s] - [%s - %s]',[playList.ItemIndex+1, playList.Count, txtAudioAlbum.Caption, txtAudioArtist.Caption, txtAudioTitle.Caption ]);
         end;
       end
     else
