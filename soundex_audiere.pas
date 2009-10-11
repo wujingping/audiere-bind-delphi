@@ -990,9 +990,17 @@ begin
       FTags.NameValueSeparator:='=';
       for I := 0 to AdrSource.getTagCount - 1 do
       begin
-        tag.key     :=Trim(AdrSource.getTagKey(I));
-        tag.value   :=Trim(AdrSource.getTagValue(I));
-        tag.category:=Trim(AdrSource.getTagType(I));
+        tag.key        := Trim(AdrSource.getTagKey(I));
+        tag.value      := Trim(AdrSource.getTagValue(I));
+        tag.category   := Trim(AdrSource.getTagType(I));
+
+        if UTF8Decode(tag.key)     <>'' then
+          tag.key      := UTF8Decode(tag.key);
+        if UTF8Decode(tag.value)   <>'' then
+          tag.value    := UTF8Decode(tag.value);
+        if UTF8Decode(tag.category)<>'' then
+          tag.category := UTF8Decode(tag.category);
+
         FTags.AddObject(tag.key+'='+tag.value,tag);
       end;
     end
@@ -1046,18 +1054,16 @@ end;
 //******************************************************************************
 function TAudio.isPausing: Boolean;
 begin
-  result:=false;
   try
     //if FIsPausing then
       result:=FIsPausing;
   except
-  
+    result:=false;
   end;
 end;
 
 function TAudio.isPlaying: Boolean;
 begin
-  result:=false;
   try
     //if assigned(pOutput) then
     if assigned(AdrOutput) then
@@ -1066,7 +1072,7 @@ begin
       FIsPlaying:=false;
     result:=FIsPlaying;
   except
-
+    result:=false;
   end;
 end;
 
@@ -1368,16 +1374,16 @@ begin
     if assigned(AdrOutput) then
     begin
       if isPlaying then
-        begin
-          AdrOutput.Stop;
-          AdrOutput.Unref;
-          AdrOutput:=nil;
-        end
-      else
-        begin
-          AdrOutput.Unref;
-          AdrOutput:=nil;
-        end;
+      begin
+        AdrOutput.Stop;
+        Sleep(50);
+      end;
+      if Position>=Length then
+        Sleep(100);
+      AdrOutput.Unref;
+      Sleep(50);
+      AdrOutput:=nil;
+      Sleep(100);
     end;
   except
   
@@ -1438,7 +1444,7 @@ end;
 destructor TSound.Destroy;
 begin
   //if assigned(FTags) then FreeAndNil(FTags);
-  If FIsPlaying then stop;
+  If FIsPlaying or FIsPausing then stop;
   if assigned(AdrDevice) then AdrDevice.UnRef;
   inherited;
 end;
@@ -1469,51 +1475,36 @@ begin
       FDevice   := AdrDevice.getName;
     end;
     if assigned(AdrDevice) then
-    begin
-      if not FileExists(FFileName) then
       begin
-        FErrorCode:=ecNoFile;
-        exit;
-      end;
+        if not FileExists(FFileName) then
+        begin
+          FErrorCode:=ecNoFile;
+          exit;
+        end;
 
-//      pSource := AdrOpenSampleSource(PAnsiChar(FFileName),FF_AUTODETECT);
-//      if pSource = nil then
-//      begin
-//        FErrorCode:=ecLoading;
-//        exit;
-//      end;
-//      AdrSource := pSource;
-      //AdrSource.ref;
-      AdrSource := AdrOpenSampleSource(PAnsiChar(FFileName),FF_AUTODETECT);
-      if AdrSource = nil then
-      begin
-        FErrorCode:=ecLoading;
-        exit;
-      end;
+        if AdrSource <> nil then AdrSource := nil;
+        AdrSource := AdrOpenSampleSource(PAnsiChar(FFileName),FF_AUTODETECT);
+        if AdrSource = nil then
+        begin
+          FErrorCode:=ecLoading;
+          exit;
+        end;
 
-//      pOutput := AdrOpenSound(AdrDevice, AdrSource, true);
-//      if pOutput = nil then
-//      begin
-//        FErrorCode:=ecOpening;
-//        exit;
-//      end;
-//      AdrOutput := pOutput;
-//      AdrSound := pOutput;
-      AdrOutput := AdrOpenSound(AdrDevice, AdrSource, true);
-      if AdrOutput = nil then
-      begin
-        FErrorCode:=ecOpening;
-        exit;
-      end;
+        if AdrOutput <> nil then AdrOutput := nil;
+        AdrOutput := AdrOpenSound(AdrDevice, AdrSource, true);
+        if AdrOutput = nil then
+        begin
+          FErrorCode:=ecOpening;
+          exit;
+        end;
 
-//      AdrSound.SetVolume(FVolume/100);
-//      AdrSound.Ref;
-//      AdrSound.Play;
-      AdrOutput.SetVolume(FVolume/100);
-      AdrOutput.Ref;
-      AdrOutput.Play;
-      getTags;
-    end;
+        AdrOutput.Ref;
+        AdrOutput.SetVolume(FVolume/100);
+        AdrOutput.Play;
+        getTags;
+      end
+    else
+      FErrorCode:=ecDevice;
   except
 
   end;
@@ -2255,7 +2246,7 @@ begin
 
   FTimer         := TTimer.Create(Self);
   FTimer.Enabled := false;
-  FTimer.Interval:= 250;
+  FTimer.Interval:= 75;
   FTimer.OnTimer := onTimer;
   FTimer.Enabled := true;
 
@@ -2274,7 +2265,7 @@ begin
 
     if assigned(FSysInfo) then FreeAndNil(FSysInfo);
 
-    if FIsPlaying or FIsPausing then stop;
+    if (FIsPlaying or FIsPausing) then stop;
     sleep(100);
 
     if assigned(FItems) then
@@ -2284,7 +2275,7 @@ begin
     end;
     if assigned(FSound) then
     begin
-      //FreeAndNil(FSound);
+      FreeAndNil(FSound);
       //FSound.Free;
     end;
 
@@ -2299,6 +2290,7 @@ begin
   try
     FItems.Add(Value);
     FCount:=FItems.Count;
+    FChanged:=true;
   except
 
   end;
@@ -2309,6 +2301,7 @@ begin
   try
     FItems.Insert(Index, Value);
     FCount:=FItems.Count;
+    FChanged:=true;
   except
 
   end;
@@ -2350,6 +2343,7 @@ end;
 procedure TPlayList.checkStatus;
 begin
   try
+    exit;
     if FIsPlaying then
     begin
       if FLastIndex=FItemIndex then Exit;
@@ -2367,6 +2361,7 @@ begin
     FItems.Clear;
     FCount:=FItems.Count;
     FItemIndex:=-1;
+    FChanged:=true;
   except
 
   end;
@@ -2376,17 +2371,17 @@ procedure TPlayList.Delete(Index: Integer);
 begin
   try
     if Index=FItemIndex then
-    begin
-      stop;
-      prev;
-    end
+      begin
+        stop;
+        prev;
+      end
     else if Index<FItemIndex then
       FItemIndex:=FItemIndex-1;
       
     FItems.Delete(index);
     FCount:=FItems.Count;
     if FCount<=0 then FItemIndex:=-1;
-
+    FChanged:=true;
   except
 
   end;
@@ -2565,13 +2560,15 @@ end;
 procedure TPlayList.onTimer(Sender: TObject);
 begin
 //exit;
-  if (not IsPlaying) and (not IsPausing) then exit;
+  if (not (IsPlaying or IsPausing)) then exit;
   if not assigned(FSound) then exit;
 
+//  if FSound.isPlaying or FSound.isPausing then
   if FSound.isPlaying then
   begin
     FVolume:=FSound.Volume;
-    FSound.Loop:=false;
+    if FSound.Loop then
+      FSound.Loop:=false;
   end;
 
   try
@@ -2589,10 +2586,7 @@ begin
                       if (not (FSound.isPlaying or FSound.isPausing)) then
                       begin
                         if FItemIndex+1<FCount then
-                          begin
-                            sleep(50);
-                            play(FItemIndex+1);
-                          end
+                          play(FItemIndex+1)
                         else
                           stop;
                       end;
@@ -2601,13 +2595,13 @@ begin
                       //if (not FSound.isPlaying) And (assigned(FSound))then
                       if (not (FSound.isPlaying or FSound.isPausing)) then
                       begin
-                        sleep(50);
                         play(Random(FCount));
                       end;
                     end;
       pmRepeat    : begin
                       //if (FSound.isPlaying) And (assigned(FSound))then
                       //if (assigned(FSound))then
+                      //if (not (FSound.isPlaying or FSound.isPausing)) then
                       begin
                         FSound.Loop:=true;
                       end;
@@ -2650,7 +2644,6 @@ begin
       TPlayListItem(FItems[FItemIndex]).IsPlaying:=false;
       TPlayListItem(FItems[FItemIndex]).IsPausing:=false;
       stop;
-      sleep(50);
     end;
 
     FItemIndex:=checkFile(index);
@@ -2670,13 +2663,13 @@ begin
       FSound.play;
       if FSound.FErrorCode<>ecNoError then
       begin
+        Sleep(250);
         FItemIndex:=FItemIndex+1;
         if FItemIndex>=FCount then
         begin
           FSound.Stop;
           //FSound.Free;
           exit;
-          break;
         end;
       end;
     until FSound.FErrorCode=ecNoError;
@@ -2764,6 +2757,7 @@ begin
 
     FIsPausing := false;
     FIsPlaying := false;
+    
     if (FItemIndex>=0) and (FItemIndex<FCount) then
     begin
       TPlayListItem(FItems[FItemIndex]).IsPausing := false;
@@ -2771,7 +2765,8 @@ begin
     end;
     if assigned(FSound) then
     begin
-      FSound.stop;
+      //if FSound.isPlaying or FSound.isPausing then
+        FSound.stop;
       //FSound.Free;
       //FreeAndNil(FSound);
     end;
